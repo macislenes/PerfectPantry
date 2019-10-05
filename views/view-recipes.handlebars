@@ -1,0 +1,93 @@
+<script>
+
+    $(function () {
+
+
+        $('#recipesTab').on('click', function () {
+
+
+            $.ajax('recipes', {
+
+                type: 'GET',
+
+            }).done(function (response) {
+
+                $('#pantryCardBody').html(response);
+                $('#recipesTab').removeClass('link');
+                $('#recipesTab').addClass('active');
+                $('#newRecipeTab').removeClass('active');
+                $('#newRecipeTab').addClass('link');
+
+            })
+
+            return false;
+
+        });
+
+        $('#newRecipesTab').on('click', function () {
+
+
+            $.ajax('edit-pantry-table', {
+
+                type: 'GET',
+
+            }).done(function (response) {
+
+                $('#pantryCardBody').html(response);
+                $('#recipesTab').removeClass('active');
+                $('#recipesTab').addClass('link');
+                $('#newRecipeTab').removeClass('link');
+                $('#newRecipeTab').addClass('active');
+
+            })
+
+            return false;
+
+        });
+
+
+    });
+
+
+</script>
+
+
+
+<div id='recipesPartial' class='container'>
+
+    <div id='recipesCard' class='row col-12'>
+
+        <div class="card text-center vertical-center col-10 offset-1">
+
+            <div id='recipesTabControl' class="card-header">
+
+                <ul class="nav nav-tabs card-header-tabs">
+
+                    <li class="navTabs nav-item">
+
+                        <a id='recipesTab' class="nav-link active" href="#">Recipes</a>
+
+                    </li>
+
+                    <li class="navTabs nav-item">
+
+                        <a id='newRecipeTab' class="nav-link" href="#">New Recipe</a>
+
+                    </li>
+
+
+                </ul>
+
+            </div>
+
+            <div id='recipeCardBody' class="card-body">
+
+                {{> recipes-content-table }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

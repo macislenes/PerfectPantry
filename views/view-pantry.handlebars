@@ -1,0 +1,126 @@
+<script>
+
+    $(function () {
+
+
+        $('#pantryTab').on('click', function () {
+
+
+            $.ajax('pantry-table', {
+
+                type: 'GET',
+
+            }).done(function (response) {
+
+                $('#pantryCardBody').html(response);
+                $('#pantryTab').removeClass('link');
+                $('#pantryTab').addClass('active');
+                $('#addTab').removeClass('active');
+                $('#addTab').addClass('link');
+                $('#editTab').removeClass('active');
+                $('#editTab').addClass('link');
+
+            })
+
+            return false;
+
+        });
+
+        $('#editTab').on('click', function () {
+
+
+            $.ajax('edit-pantry-table', {
+
+                type: 'GET',
+
+            }).done(function (response) {
+
+                $('#pantryCardBody').html(response);
+                $('#pantryTab').removeClass('active');
+                $('#pantryTab').addClass('link');
+                $('#addTab').removeClass('active');
+                $('#addTab').addClass('link');
+                $('#editTab').removeClass('link');
+                $('#editTab').addClass('active');
+
+            })
+
+            return false;
+
+        });
+
+        $('#addTab').on('click', function () {
+
+
+            $.ajax('add-to-pantry-table', {
+
+                type: 'GET',
+
+            }).done(function (response) {
+
+                $('#pantryCardBody').html(response);
+                $('#pantryTab').removeClass('active');
+                $('#pantryTab').addClass('link');
+                $('#addTab').removeClass('link');
+                $('#addTab').addClass('active');
+                $('#editTab').removeClass('active');
+                $('#editTab').addClass('link');
+
+            })
+
+            return false;
+
+        });
+
+
+
+    });
+
+
+</script>
+
+
+
+<div id='myPantryPartial' class='container'>
+
+    <div id='myPantryCard' class='row col-12'>
+
+        <div class="card text-center vertical-center col-10 offset-1">
+
+            <div id='pantryTabControl' class="card-header">
+
+                <ul class="nav nav-tabs card-header-tabs">
+
+                    <li class="navTabs nav-item">
+
+                        <a id='pantryTab' class="nav-link active" href="#">Pantry</a>
+
+                    </li>
+
+                    <li class="navTabs nav-item">
+
+                        <a id='editTab' class="nav-link" href="#">Edit</a>
+
+                    </li>
+
+                    <li class="navTabs nav-item">
+
+                        <a id='addTab' class="nav-link" href="#">Add</a>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <div id='pantryCardBody' class="card-body">
+
+                {{> pantry-content-table }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

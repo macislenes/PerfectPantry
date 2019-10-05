@@ -1,0 +1,52 @@
+/* Nav Bar Styling */
+/* --------------- */
+#navBarBody {
+
+    background-color: #243119;
+
+}
+#navBarLogoText {
+
+    color: #c6c5b9;
+    font-size: 30px;
+
+}
+#navBarButton {
+
+    border-color: #c6c5b9;
+
+}
+.dropDownNav {
+
+    background-color: #c6c5b9;
+
+}
+
+
+/* Body Styling */
+/* ------------ */
+
+.container {
+
+    border-radius: 2px;
+
+}
+
+/* My Pantry Partial Styling */
+/* ------------------------- */
+
+#myPantryPartial #recipesPartial {
+
+    background-color: #c6c5b9;
+
+}
+#myPantryCard #recipesCard {
+
+    padding: 10px;
+
+}
+#pantryTabControl #recipesTabControl {
+
+    background-color: white;
+
+}
