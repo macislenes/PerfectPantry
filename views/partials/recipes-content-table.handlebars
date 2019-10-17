@@ -1,25 +1,73 @@
+<script>
+
+    function removeRowUsingButton(button){
+
+
+            $(button).parent().parent().remove();
+        };
+
+    function showRecipeModal(recipeID) {
+
+            $.ajax('/recipe-view/' + recipeID, {
+
+                type: 'GET'
+
+            }).done(function (res) {
+
+                $('.modal-dialog').html(res);
+                $('#recipeModal').modal('show');
+
+            });
+
+    };
+
+    function editRecipeModal(recipeID) {
+
+            $.ajax('/recipe-edit/'+ recipeID, {
+
+                type: 'GET'
+
+            }).done(function (res) {
+
+                $('.modal-dialog').html(res);
+                $('#recipeModal').modal('show');
+
+            });
+
+
+    };
+
+    $(function() {
+
+        $('#recipesTab').removeClass('link');
+        $('#recipesTab').addClass('active');
+        $('#newRecipeTab').removeClass('active');
+        $('#newRecipeTab').addClass('link');
+
+
+    });
+
+
+
+</script>
+
+<div class="modal fade" id="recipeModal" tabindex="-1" role="dialog" aria-labelledby="recipeModalTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+  </div>
+</div>
+
+
 <table class="table table-hover">
-    <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Recipe Name</th>
-        </tr>
-    </thead>
+
     <tbody>
         <tr>
-            <th scope="row">1</th>
             <td>Name</td>
-            <td><button type="button" class="btn btn-info">view</button></td>
-        </tr>
-        <tr>
-            <th scope="row">2</th>
-            <td>Name</td>
-            <td><button type="button" class="btn btn-info">view</button></td>
-        </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td>Name</td>
-            <td><button type="button" class="btn btn-info">view</button></td>
+            
+            <td><button onclick="showRecipeModal(1)" type="button" class="btn btn-outline-secondary">view</button>
+            </td>
+            <td><button onclick="editRecipeModal(1)" type="button" class="btn btn-outline-secondary">edit</button>
+            </td>
+            <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>
         </tr>
     </tbody>
 

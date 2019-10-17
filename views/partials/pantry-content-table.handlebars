@@ -1,7 +1,26 @@
+
+<script>
+
+
+    $(function() {
+
+            $('#pantryTab').removeClass('link');
+            $('#pantryTab').addClass('active');
+            $('#addTab').removeClass('active');
+            $('#addTab').addClass('link');
+            $('#editTab').removeClass('active');
+            $('#editTab').addClass('link');
+
+    });
+
+
+
+</script>
+
+
 <table class="table table-hover">
     <thead>
         <tr>
-            <th scope="col">#</th>
             <th scope="col">Food Item</th>
             <th scope="col">Quantity</th>
             <th scope="col">Units</th>
@@ -9,22 +28,9 @@
     </thead>
     <tbody>
         <tr>
-            <th scope="row">1</th>
             <td>Pears</td>
             <td>4</td>
             <td>Each</td>
-        </tr>
-        <tr>
-            <th scope="row">2</th>
-            <td>Apples</td>
-            <td>6</td>
-            <td>Each</td>
-        </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td>Flour</td>
-            <td>10</td>
-            <td>Ounces</td>
         </tr>
     </tbody>
 </table>

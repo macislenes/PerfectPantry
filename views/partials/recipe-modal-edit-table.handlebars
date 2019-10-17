@@ -1,0 +1,167 @@
+<script>
+
+    function removeRowUsingButton(button) {
+        $.ajax('/recipe-edit/:id', {
+
+            type: 'DELETE'
+
+        }).done(function () {
+
+            console.log('Item Was Deleted');
+            $(button).parent().parent().remove();
+
+        });
+    }
+
+    $(function () {
+
+    let newIngredientRow =
+        `<tr class='addRecipeEdit'>
+                    <td><input class="ingredientName form-control" type="text" value='Name'></td>
+                    <td><input class="editRecipeQuantityInput form-control" type="text" value='#'></td>
+                    <td>
+                        <div class="form-group">
+                            <select class="editRecipeMeasurementSelector form-control" id="exampleFormControlSelect1">
+                                <option>Each</option>
+                                <option>Ounces</option>
+                                <option>Pounds</option>
+                                <option>Cups</option>
+                                <option>Fl. Ounces</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>                
+        </tr>`
+
+
+
+    $('#saveRecipeChangesButton').on('click', function () {
+
+        let recipeName = $('#recipeName').text();
+        let recipeId = $('#recipeId').val();
+        console.log(recipeName);
+        let newRecipeIngredientList = [];
+        $('.addRecipeEdit').each(function () {
+            let ingredientName = $(this).find('.ingredientName').text();
+            let editRecipeQuantity = $(this).find('.editRecipeQuantityInput').val().trim().toLowerCase();
+            let editRecipeMeasurement = $(this).find('.editRecipeMeasurementSelector').val().trim().toLowerCase();
+            let recipeEditDetails = {
+
+                item_name: ingredientName,
+                item_quantity: editRecipeQuantity,
+                measurement_unit: editRecipeMeasurement
+
+            };
+            newRecipeIngredientList.push(recipeEditDetails);
+        });
+
+        let recipeEditData = {
+
+            recipe_name: recipeName,
+            items: newRecipeIngredientList
+
+        };
+
+        console.log(recipeEditData);
+
+        $.ajax('recipe-edit/' + '1', {
+
+            type: 'PUT',
+            data: recipeEditData
+
+
+        }).done(function () {
+
+            alert('You Have Edited Your Recipe!!');
+
+        });
+
+    });
+
+
+    $('#addIngredientButton').on('click', function () {
+
+        console.log('here');
+        $('.editRecipeInput').append(newIngredientRow);
+
+    });
+
+    });
+
+
+</script>
+
+
+<div class="modal-content">
+
+    <div class="modal-header">
+
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+            <span aria-hidden="true">&times;</span>
+
+        </button>
+
+    </div>
+
+    <div class="modal-body">
+        <div>
+
+            <h2 id='recipeName'>Recipe Name</h2>
+            <input type="hidden" id="recipeId" value="1">
+
+        </div>
+
+
+        <table class="table table-hover">
+
+            <thead>
+
+                <tr>
+                    <th scope="col">Ingredients</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Units</th>
+                </tr>
+
+            </thead>
+
+            <tbody class='editRecipeInput'>
+
+                <tr class='addRecipeEdit'>
+                    <td class='ingredientName'>Ingredient</td>
+                    <td><input class="editRecipeQuantityInput form-control" type="text" value='#'></td>
+                    <td>
+                        <div class="form-group">
+                            <select class="editRecipeMeasurementSelector form-control" id="exampleFormControlSelect1">
+                                <option>Each</option>
+                                <option>Ounces</option>
+                                <option>Pounds</option>
+                                <option>Cups</option>
+                                <option>Fl. Ounces</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>                
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="modal-footer">
+
+
+        <button type="button" id='addIngredientButton' class="btn btn-outline-secondary">Add Ingredient</button>
+
+        <button type="button" id='saveRecipeChangesButton' class="btn btn-outline-secondary">Save changes</button>
+
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+
+
+    </div>
+
+</div>

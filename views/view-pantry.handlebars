@@ -1,18 +1,24 @@
 <script>
 
+    // on document load
     $(function () {
 
-
+        // ajax call to 'pantryTab' 
+        // using the 'get' method to return information
         $('#pantryTab').on('click', function () {
 
-
+            // ajax call to 'pantry-table' 
+            // using the 'get' method to return information
+            // We will display the 'pantry-table' partial
             $.ajax('pantry-table', {
 
                 type: 'GET',
 
             }).done(function (response) {
 
+                // Passing the response from the ajax call into the html of the pantryCardBody
                 $('#pantryCardBody').html(response);
+                 // Changing the class of the tabs in order to show the desired partial
                 $('#pantryTab').removeClass('link');
                 $('#pantryTab').addClass('active');
                 $('#addTab').removeClass('active');
@@ -26,16 +32,22 @@
 
         });
 
+        // ajax call to 'editTab' 
+        // using the 'get' method to return information
         $('#editTab').on('click', function () {
 
-
+            // ajax call to 'edit-pantry-table' 
+            // using the 'get' method to return information
+            // We will display the 'edit-pantry-table' partial
             $.ajax('edit-pantry-table', {
 
                 type: 'GET',
 
             }).done(function (response) {
 
+                // Passing the response from the ajax call into the html of the pantryCardBody
                 $('#pantryCardBody').html(response);
+                // Changing the class of the tabs in order to show the desired partial
                 $('#pantryTab').removeClass('active');
                 $('#pantryTab').addClass('link');
                 $('#addTab').removeClass('active');
@@ -49,16 +61,22 @@
 
         });
 
+        // ajax call to 'addTab' 
+        // using the 'get' method to return information
         $('#addTab').on('click', function () {
 
-
+            // ajax call to 'edit-pantry-table' 
+            // using the 'get' method to return information
+            // We will display the 'edit-pantry-table' partial
             $.ajax('add-to-pantry-table', {
 
                 type: 'GET',
 
             }).done(function (response) {
 
+                // Passing the response from the ajax call into the html of the pantryCardBody
                 $('#pantryCardBody').html(response);
+                // Changing the class of the tabs in order to show the desired partial
                 $('#pantryTab').removeClass('active');
                 $('#pantryTab').addClass('link');
                 $('#addTab').removeClass('link');
@@ -71,7 +89,6 @@
             return false;
 
         });
-
 
 
     });
@@ -93,7 +110,7 @@
 
                     <li class="navTabs nav-item">
 
-                        <a id='pantryTab' class="nav-link active" href="#">Pantry</a>
+                        <a id='pantryTab' class="nav-link" href="#">Pantry</a>
 
                     </li>
 
@@ -115,7 +132,20 @@
 
             <div id='pantryCardBody' class="card-body">
 
-                {{> pantry-content-table }}
+                {{!-- Using Handlebars to add an if else statement --}}
+                {{!-- If the query mode == addView we will show the add-to-pantry-content-table partial --}}
+                {{#if addView}}
+                {{> add-to-pantry-content-table}}
+                {{!-- else if  query mode == edit-view which will display the edit-pantry-content-table--}}
+                {{else}}
+                    {{#if editView}}
+                    {{> edit-pantry-content-table}}
+                    {{!-- else we will display the pantry-content-table --}}
+                    {{else}}
+                     {{> pantry-content-table }}
+                    {{/if}}
+                {{/if}}
+
 
             </div>
 

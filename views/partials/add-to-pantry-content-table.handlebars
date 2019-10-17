@@ -1,21 +1,119 @@
-<table class="table table-hover">
+<script>
+
+// .on 'click' function to remove the grandparent of the button object
+function removeRowUsingButton(button){
+            $(button).parent().parent().remove();
+};
+
+    $(function () {
+
+        // variable with 
+        let newItemRow =
+            `<tr class= 'addItemInput'>
+            <td><input class="itemNameInput form-control" type="text" value='Item Name'></td>
+            <td><input class="itemQuantityInput form-control" type="text" value='#'></td>
+            <td>
+                <div class="form-group">
+                    <select class="itemMeasurementSelector form-control" id="exampleFormControlSelect1">
+                        <option>Each</option>
+                        <option>Ounces</option>
+                        <option>Pounds</option>
+                        <option>Cups</option>
+                        <option>Fl. Ounces</option>
+                    </select>
+                </div>
+            </td>
+            <td><input class="itemParInput form-control" type="text" value='10'></td>
+            <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>
+        </tr>`
+
+
+        $('#submitPantryAddButton').on('click', function() {
+
+            let itemList = [];
+
+            $('.addItemInput').each(function (){
+
+                let itemName = $(this).find('.itemNameInput').val().trim().toLowerCase();
+
+                let itemQuantity = $(this).find('.itemQuantityInput').val().trim().toLowerCase();
+
+                let itemMeasurement = $(this).find('.itemMeasurementSelector').val().trim().toLowerCase();
+
+                let itemParLevel = $(this).find('.itemParInput').val().trim().toLowerCase();
+
+                let itemDetails = {
+
+                    item_name: itemName,
+                    item_quantity: itemQuantity,
+                    measurement_unit: itemMeasurement,
+                    item_par: itemParLevel
+
+                };
+
+                itemList.push(itemDetails);
+            });
+
+            let items = {
+
+                items: itemList
+
+            };
+
+
+            $.ajax('/pantry', {
+
+                type: 'POST',
+                data: items
+
+            }).done(function(){
+
+                alert('You Have Added To Your Inventory!!');
+
+            });
+
+        });
+
+        $('#addItemButton').on('click', function () {
+
+            $('#tableBody').append(newItemRow);
+
+        });
+
+            $('#pantryTab').removeClass('active');
+            $('#pantryTab').addClass('link');
+            $('#addTab').removeClass('link');
+            $('#addTab').addClass('active');
+            $('#editTab').removeClass('active');
+            $('#editTab').addClass('link');
+
+    });
+
+
+
+</script>
+
+
+
+
+
+
+<table class="table table-hover borderless">
     <thead>
         <tr>
-            <th scope="col">#</th>
             <th scope="col">Food Item</th>
             <th scope="col">Quantity</th>
             <th scope="col">Units</th>
             <th scope="col">Par Level</th>
         </tr>
     </thead>
-    <tbody>
-        <tr>
-            <th scope="row">1</th>
-            <td><input class="form-control" type="text" value='Name'></td>
-            <td><input class="form-control" type="text" value='6'></td>
+    <tbody id='tableBody'>
+        <tr class= 'addItemInput'>
+            <td><input class="itemNameInput form-control" type="text" value='Item Name'></td>
+            <td><input class="itemQuantityInput form-control" type="text" value='#'></td>
             <td>
                 <div class="form-group">
-                    <select class="form-control" id="exampleFormControlSelect1">
+                    <select class="itemMeasurementSelector form-control" id="exampleFormControlSelect1">
                         <option>Each</option>
                         <option>Ounces</option>
                         <option>Pounds</option>
@@ -24,49 +122,17 @@
                     </select>
                 </div>
             </td>
-            <td><input class="form-control" type="text" value='10'></td>
+            <td><input class="itemParInput form-control" type="text" value='10'></td>
+            <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>
         </tr>
-        <tr>
-            <th scope="row">1</th>
-            <td><input class="form-control" type="text" value='Name'></td>
-            <td><input class="form-control" type="text" value='6'></td>
-            <td>
-                <div class="form-group">
-                    <select class="form-control" id="exampleFormControlSelect1">
-                        <option>Each</option>
-                        <option>Ounces</option>
-                        <option>Pounds</option>
-                        <option>Cups</option>
-                        <option>Fl. Ounces</option>
-                    </select>
-                </div>
-            </td>
-            <td><input class="form-control" type="text" value='10'></td>
-        </tr>
-        <tr>
-            <th scope="row">1</th>
-            <td><input class="form-control" type="text" value='Name'></td>
-            <td><input class="form-control" type="text" value='6'></td>
-            <td>
-                <div class="form-group">
-                    <select class="form-control" id="exampleFormControlSelect1">
-                        <option>Each</option>
-                        <option>Ounces</option>
-                        <option>Pounds</option>
-                        <option>Cups</option>
-                        <option>Fl. Ounces</option>
-                    </select>
-                </div>
-            </td>
-            <td><input class="form-control" type="text" value='10'></td>
-        </tr>
-
-        <tr>
-
-            <td><input class="btn btn-primary" type="submit" value="Submit"></td>
-
-        </tr>
-
     </tbody>
 
 </table>
+
+<div >
+
+    <button id='addItemButton' type="button" class="btn btn-outline-secondary">Add Item</button>
+    <button id='submitPantryAddButton' type="button" class="btn btn-outline-success">Add To Pantry</button>
+
+
+</div>

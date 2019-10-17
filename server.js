@@ -5,6 +5,9 @@ let express = require('express');
 let app = express();
 let PORT = process.env.PORT || 8080;
 
+// Requiring our models for syncing
+var db = require("./models");
+
 // parse application body
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,12 +24,15 @@ app.set("view engine", "handlebars");
 // Import routes and give the server access to them.
 require("./routes/html-routes.js")(app);
 require("./routes/inventory-routes.js")(app);
-//require("./routes/recipes-routes.js")(app);
+require("./routes/recipes-routes.js")(app);
 
 
-//db.sequelize.sync({ force: true }).then(function() {
-    app.listen(PORT, function() {
-      console.log("App listening on PORT " + PORT);
-    });
-//  });
+
+// Syncing our sequelize models and then starting our Express app
+// =============================================================
+db.sequelize.sync({ force: true }).then(function() {
+  app.listen(PORT, function() {
+    console.log("App listening on PORT " + PORT);
+  });
+});
   

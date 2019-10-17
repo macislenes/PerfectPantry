@@ -1,27 +1,30 @@
+body {
+
+    background-color: pink;
+
+}
 /* Nav Bar Styling */
 /* --------------- */
 #navBarBody {
 
-    background-color: #243119;
+    background-color: transparent;
+    color: #243119;
+    font-family: 'Raleway', sans-serif;
+    display: flex!important;
 
 }
 #navBarLogoText {
 
-    color: #c6c5b9;
+    color: #4a6d7c;
     font-size: 30px;
+    font-family: 'Cutive Mono', monospace;
 
 }
 #navBarButton {
 
-    border-color: #c6c5b9;
+    border-color: #243119;
 
 }
-.dropDownNav {
-
-    background-color: #c6c5b9;
-
-}
-
 
 /* Body Styling */
 /* ------------ */
@@ -29,6 +32,7 @@
 .container {
 
     border-radius: 2px;
+    font-family: 'Raleway', sans-serif;
 
 }
 
@@ -37,7 +41,7 @@
 
 #myPantryPartial #recipesPartial {
 
-    background-color: #c6c5b9;
+    background-color: green;
 
 }
 #myPantryCard #recipesCard {
@@ -50,3 +54,4 @@
     background-color: white;
 
 }
+

@@ -1,18 +1,23 @@
 <script>
 
+    // on document load
     $(function () {
 
-
+        // .on 'click' function for the recipes tab 
         $('#recipesTab').on('click', function () {
-
-
-            $.ajax('recipes', {
+        
+            // ajax call to 'recipes-view' 
+            // using the 'get' method to return information
+            // We will display the 'recipes-view' partial
+            $.ajax('recipes-view', {
 
                 type: 'GET',
 
             }).done(function (response) {
 
-                $('#pantryCardBody').html(response);
+                // Passing the response from the ajax call into the html of the recipeCardBody
+                $('#recipeCardBody').html(response);
+                // Changing the class of the tabs in order to show the desired partial
                 $('#recipesTab').removeClass('link');
                 $('#recipesTab').addClass('active');
                 $('#newRecipeTab').removeClass('active');
@@ -20,20 +25,25 @@
 
             })
 
+            // Do not reload the page
             return false;
 
         });
 
-        $('#newRecipesTab').on('click', function () {
+        // .on 'click' function for the recipes tab 
+        $('#newRecipeTab').on('click', function () {
 
-
-            $.ajax('edit-pantry-table', {
+            // ajax call to 'recipes-new' 
+            // using the 'get' method to return information
+            $.ajax('recipes-new', {
 
                 type: 'GET',
 
             }).done(function (response) {
 
-                $('#pantryCardBody').html(response);
+                // Passing the response from the ajax call into the html of the recipeCardBody
+                $('#recipeCardBody').html(response);
+                // Changing the class of the tabs in order to show the desired partial
                 $('#recipesTab').removeClass('active');
                 $('#recipesTab').addClass('link');
                 $('#newRecipeTab').removeClass('link');
@@ -65,7 +75,7 @@
 
                     <li class="navTabs nav-item">
 
-                        <a id='recipesTab' class="nav-link active" href="#">Recipes</a>
+                        <a id='recipesTab' class="nav-link" href="#">Recipes</a>
 
                     </li>
 
@@ -82,7 +92,15 @@
 
             <div id='recipeCardBody' class="card-body">
 
+                {{!-- Using Handlebars to add an if else statement --}}
+                {{!-- If the query mode == addView it will show the new-recipe-content-table partial --}}
+                {{#if addView}}
+                {{> new-recipe-content-table}}
+                {{!-- Else it will show the recipe-content-table --}}
+                {{else}}
                 {{> recipes-content-table }}
+                {{/if}}
+
 
             </div>
 

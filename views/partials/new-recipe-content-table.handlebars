@@ -1,0 +1,134 @@
+<script>
+
+    function removeRowUsingButton(button) {
+        $(button).parent().parent().remove();
+    }
+
+    $(function () {
+
+        let newIngredientRow =
+            `<tr class='recipeIngredientInput'>
+            <td><input  class="ingredientNameInput form-control" type="text" value='Name'></td>
+            <td><input  class="ingredientQuantityInput form-control" type="text" value='#'></td>
+            <td>
+                <div class="form-group">
+                    <select class="measurementSelector form-control" id="exampleFormControlSelect1">
+                        <option>Each</option>
+                        <option>Ounces</option>
+                        <option>Pounds</option>
+                        <option>Cups</option>
+                        <option>Fl. Ounces</option>
+                    </select>
+                </div>
+            </td>
+            <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>
+        </tr>`
+
+
+        $('#submitRecipeButton').on('click', function () {
+
+            let recipeName = $('#recipeNameInput').val().trim().toLowerCase();
+
+            let recipeIngredients = [];
+
+            $('.recipeIngredientInput').each(function () {
+
+                let ingredientName = $(this).find('.ingredientNameInput').val().trim().toLowerCase();
+
+                let ingredientQuantity = $(this).find('.ingredientQuantityInput').val().trim().toLowerCase();
+
+                let ingredientMeasurement = $(this).find('.measurementSelector').val().trim().toLowerCase();
+
+                let ingredientDetails = {
+
+                    item_name: ingredientName,
+                    item_quantity: ingredientQuantity,
+                    measurement_unit: ingredientMeasurement
+
+                };
+
+                recipeIngredients.push(ingredientDetails);
+
+            });
+
+            let recipeData = {
+
+                recipe_name: recipeName,
+                ingredients: recipeIngredients
+
+            };
+
+            $.ajax('/recipe', {
+
+                type: 'POST',
+                data: recipeData
+
+            }).done(function () {
+
+                alert('You Have Created A New Recipe!!');
+
+            });
+
+        });
+
+        $('#addIngredientButton').on('click', function () {
+
+            $('#tableBody').append(newIngredientRow);
+
+        });
+        
+            $('#recipesTab').removeClass('active');
+            $('#recipesTab').addClass('link');
+            $('#newRecipeTab').removeClass('link');
+            $('#newRecipeTab').addClass('active');
+
+
+    });
+
+
+
+</script>
+
+
+<table class="table table-hover">
+
+    <input type="name" class="form-control" id="recipeNameInput" placeholder="Enter Recipe Name">
+
+
+    <thead>
+        <tr>
+            <th scope="col">Ingredients</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Units</th>
+        </tr>
+    </thead>
+    <tbody id='tableBody'>
+        <tr class='recipeIngredientInput'>
+            <td><input class="ingredientNameInput form-control" type="text" value='Name'></td>
+            <td><input class="ingredientQuantityInput form-control" type="text" value='#'></td>
+            <td>
+                <div class="form-group">
+                    <select class="measurementSelector form-control" id="exampleFormControlSelect1">
+                        <option>Each</option>
+                        <option>Ounces</option>
+                        <option>Pounds</option>
+                        <option>Cups</option>
+                        <option>Fl. Ounces</option>
+                    </select>
+                </div>
+            </td>
+            <td><button onclick="removeRowUsingButton(this); return false;" type="button"
+                    class="removeIngredientButton btn btn-outline-danger">x</button></td>
+        </tr>
+
+    </tbody>
+
+</table>
+
+<div>
+
+    <button id='addIngredientButton' type="button" class="btn btn-outline-secondary">Add Ingredient</button>
+    <button id='submitRecipeButton' type="button" class="btn btn-outline-success">Submit</button>
+
+
+</div>

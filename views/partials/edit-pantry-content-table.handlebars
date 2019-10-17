@@ -1,38 +1,115 @@
+<script>
+
+function removeRowUsingButton(button) {
+
+        $.ajax('/pantry-item/:id', {
+
+            type: 'DELETE'
+
+        }).done(function () {
+
+            alert('You Have Edited Your Pantry!!');
+            $(button).parent().parent().remove();
+
+        });
+
+
+    };
+
+    $(function () {
+
+        $('#submitPantryButton').on('click', function () {
+
+            let pantryEditList = [];
+
+            $('.editPantryInput').each(function () {
+
+                let itemNewQuantity = $(this).find('.itemQuantityEditInput').val().trim().toLowerCase();
+
+                let itemNewMeasurement = $(this).find('.editMeasurementSelector').val().trim().toLowerCase();
+
+                let pantryEditDetails = {
+
+                    item_quantity: itemNewQuantity,
+                    measurement_unit: itemNewMeasurement
+
+                };
+
+                pantryEditList.push(pantryEditDetails);
+
+            });
+
+            let pantryEditData = {
+
+                ingredients: pantryEditList
+
+            };
+
+            $.ajax('/pantry-edit', {
+
+                type: 'POST',
+                data: pantryEditData
+
+            }).done(function () {
+
+                alert('You Have Edited Your Pantry!!');
+
+            });
+
+        });
+
+            $('#pantryTab').removeClass('active');
+            $('#pantryTab').addClass('link');
+            $('#addTab').removeClass('active');
+            $('#addTab').addClass('link');
+            $('#editTab').removeClass('link');
+            $('#editTab').addClass('active');
+
+
+    });
+
+
+</script>
+
+
 <table class="table table-hover">
+
     <thead>
+
         <tr>
-            <th scope="col">#</th>
             <th scope="col">Food Item</th>
             <th scope="col">Quantity</th>
             <th scope="col">Units</th>
         </tr>
+
     </thead>
+
     <tbody>
-        <tr>
-            <th scope="row">1</th>
-            <td>Pears</td>
-            <td><input class="form-control" type="text" value='6'></td>
-            <td>Each</td>
-        </tr>
-        <tr>
-            <th scope="row">2</th>
-            <td>Apples</td>
-            <td><input class="form-control" type="text" value='6'></td>
-            <td>Each</td>
-        </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td>Flour</td>
-            <td><input class="form-control" type="text" value='6'></td>
-            <td>Ounces</td>
-        </tr>
 
-        <tr>
-
-           <td><input class="btn btn-primary" type="submit" value="Submit"></td>
-
+        <tr class='editPantryInput'>
+            <td>Item</td>
+            <td><input class="itemQuantityEditInput form-control" type="text" value='#'></td>
+            <td>
+                <div class="form-group">
+                    <select class="editMeasurementSelector form-control" id="exampleFormControlSelect1">
+                        <option>Each</option>
+                        <option>Ounces</option>
+                        <option>Pounds</option>
+                        <option>Cups</option>
+                        <option>Fl. Ounces</option>
+                    </select>
+                </div>
+            </td>
+            <td><button onclick="removeRowUsingButton(this); return false;" type="button"
+                    class="removeIngredientButton btn btn-outline-danger">x</button></td>
         </tr>
 
     </tbody>
 
 </table>
+
+<div>
+
+    <button id='submitPantryButton' type="button" class="btn btn-outline-success">Submit</button>
+
+</div>
