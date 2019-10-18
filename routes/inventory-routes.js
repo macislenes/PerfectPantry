@@ -6,29 +6,50 @@ const Op = Sequelize.Op
 // Routes
 module.exports = function (app) {
 
-    async function createOrUpdatePantryIngredient(user_id, ingredientId, quantity, par) {
+    async function createOrUpdatePantryIngredient(user_id, ingredientId, quantity, par, measurement_unit, addQuantity) {
         const foundItem = await db.Pantry.findOne({ where: { user_id: user_id, ingredientId: ingredientId } });
         if (!foundItem) {
             // Item not found, create a new one
             var tempItem = {
-                user_id: 1,
+                user_id: user_id,
                 quantity: parseInt(quantity),
                 par: parseInt(par),
-                IngredientId: parseInt(ingredientId)
+                IngredientId: parseInt(ingredientId),
+                measurement_unit: measurement_unit
             };
             console.log(tempItem);
             const item = await db.Pantry.create(tempItem).done(function(){});
             return item;
         } else {
+            let newQty;
             // Found an item, update it
-            newQty = foundItem.quantity + parseInt(quantity);
+            if(addQuantity){
+                newQty = foundItem.quantity + parseInt(quantity);
+            }
+            else{
+                newQty = parseInt(quantity);
+            }
             //const item = await db.Pantry.update(foundItem, { where: {user_id: user_id, ingredientId: ingredientId} });
-            foundItem.update({quantity: newQty});
+            foundItem.update({quantity: newQty, par: parseInt(par), measurement_unit: measurement_unit});
             return foundItem;
         }
     }
 
-    app.get('/pantry', function (req, res) {
+    async function findUserPantryIngredients(user_id){
+        const pantryEntries = await db.Pantry.findAll(
+            { 
+                where: {
+                    user_id: user_id
+                },
+                include: [
+                    {model: db.Ingredient}
+                ]
+            }
+        );
+        return pantryEntries;
+    }
+
+    app.get('/pantry', async function (req, res) {
 
         hbsData = {};
 
@@ -36,30 +57,60 @@ module.exports = function (app) {
             hbsData.addView = true;
             hbsData.editView = false;
 
-        } else if (req.query.mode == 'edit') {
-            hbsData.editView = true;
-            hbsData.addView = false;
-
-        };
-
-        itemData = {
-            item_name: "Maci's titties",
-            measurement_unit: "nips"
+        } else{
+            if (req.query.mode == 'edit') {
+                hbsData.editView = true;
+                hbsData.addView = false;
+            };
+            //read from the database and set it in the variable we'll be passing to the handlebar
+            const pantryEntries = await db.Pantry.findAll(
+                { 
+                    where: {
+                        user_id: 1
+                    },
+                    include: [
+                        {model: db.Ingredient}
+                    ]
+                }
+            );
+            hbsData.pantryEntries = pantryEntries;
         }
 
         res.render('view-pantry', hbsData);
 
     });
 
-    app.get('/pantry-table', function (req, res) {
-
-        res.render('partials/pantry-content-table', { layout: false });
+    app.get('/pantry-table', async function (req, res) {
+        hbsData = {
+            layout: false
+        };
+        //read from the database and set it in the variable we'll be passing to the handlebar
+        const pantryEntries = await db.Pantry.findAll(
+            { 
+                where: {
+                    user_id: 1
+                },
+                include: [
+                    {model: db.Ingredient}
+                ]
+            }
+        );
+        hbsData.pantryEntries = pantryEntries;
+        
+        res.render('partials/pantry-content-table', hbsData);
 
     });
 
-    app.get('/edit-pantry-table', function (req, res) {
+    app.get('/edit-pantry-table', async function (req, res) {
 
-        res.render('partials/edit-pantry-content-table', { layout: false })
+        hbsData = {
+            layout: false
+        };
+        //read from the database and set it in the variable we'll be passing to the handlebar
+        hbsData.pantryEntries = await findUserPantryIngredients(1);
+        console.log(hbsData);
+        
+        res.render('partials/edit-pantry-content-table', hbsData);
 
     });
 
@@ -101,8 +152,7 @@ module.exports = function (app) {
         req.body.items.forEach(ingredient => {
             if (foundIngredients.indexOf(ingredient.item_name) == -1) {
                 toCreate.push({
-                    name: ingredient.item_name,
-                    measurement_unit: ingredient.measurement_unit
+                    name: ingredient.item_name
                 });
             }
         });
@@ -119,24 +169,34 @@ module.exports = function (app) {
 
         req.body.items.forEach(ingredient => {
             let ingredientId = ingredientIds[ingredient.item_name];
-            createOrUpdatePantryIngredient(1, ingredientId, ingredient.item_quantity, ingredient.item_par);
+            createOrUpdatePantryIngredient(1, ingredientId, ingredient.item_quantity, ingredient.item_par, ingredient.measurement_unit, true);
         });
 
         res.send()
 
     });
 
-    app.post('/pantry-edit', function (req, res) {
-
+    app.post('/pantry-edit', async function (req, res) {
         console.log(req.body);
-        res.send()
+        req.body.ingredients.forEach(ingredient => {
+            newRows = createOrUpdatePantryIngredient(1, parseInt(ingredient.item_id), ingredient.item_quantity, ingredient.item_par, ingredient.measurement_unit, false);
+        });
+        res.send();
 
     });
 
-    app.delete('/pantry-item/:id', function (req, res) {
+    app.delete('/pantry-item/:id', async function (req, res) {
 
         console.log(req.params.id)
-        res.send()
+        await db.Pantry.destroy(
+            {
+                where: {
+                    user_id: 1,
+                    IngredientId: parseInt(req.params.id)
+                }
+            }
+        )
+        res.send();
 
     });
 

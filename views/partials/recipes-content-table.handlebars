@@ -60,15 +60,17 @@
 <table class="table table-hover">
 
     <tbody>
+        {{#each recipeEntries}}
         <tr>
-            <td>Name</td>
+            <td>{{name}}</td>
             
-            <td><button onclick="showRecipeModal(1)" type="button" class="btn btn-outline-secondary">view</button>
+            <td><button onclick="showRecipeModal({{id}})" type="button" class="btn btn-outline-secondary">view</button>
             </td>
-            <td><button onclick="editRecipeModal(1)" type="button" class="btn btn-outline-secondary">edit</button>
+            <td><button onclick="editRecipeModal({{id}})" type="button" class="btn btn-outline-secondary">edit</button>
             </td>
             <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>
         </tr>
+        {{/each}}
     </tbody>
 
 </table>

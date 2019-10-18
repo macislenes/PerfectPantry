@@ -17,9 +17,14 @@ app.use(express.static('public'));
 
 // set handlebars
 let exphbs = require("express-handlebars");
+const HandleBars = require("handlebars")
 
 app.engine("handlebars", exphbs({ defaultLayout: "main-layout" }));
 app.set("view engine", "handlebars");
+
+HandleBars.registerHelper('select', function(selected, options) {
+  return options.fn(this).replace( new RegExp(' value=\"' + selected + '\"'), '$& selected="selected"').replace( new RegExp('>' + selected + '</option>','i'), ' selected="selected"$&');
+});
 
 // Import routes and give the server access to them.
 require("./routes/html-routes.js")(app);
@@ -30,7 +35,7 @@ require("./routes/recipes-routes.js")(app);
 
 // Syncing our sequelize models and then starting our Express app
 // =============================================================
-db.sequelize.sync({ force: true }).then(function() {
+db.sequelize.sync({ force: false }).then(function() {
   app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);
   });

@@ -2,7 +2,7 @@
 
     <div class="modal-header">
 
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">{{recipeEntry.name}}</h5>
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            
@@ -13,11 +13,7 @@
     </div>
 
     <div class="modal-body">
-        <div>
-
-            <h2 id='recipeName'>Recipe Name</h2>
-
-        </div>
+        
 
 
         <table class="table table-hover">
@@ -33,13 +29,13 @@
             </thead>
 
             <tbody>
-
+                {{#each ingredients}}
                 <tr>
-                    <td>Pears</td>
-                    <td>4</td>
-                    <td>Each</td>
+                    <td>{{Ingredient.name}}</td>
+                    <td>{{quantity}}</td>
+                    <td>{{measurement_unit}}</td>
                 </tr>
-
+                {{/each}}
             </tbody>
 
         </table>

@@ -23,14 +23,18 @@
         <tr>
             <th scope="col">Food Item</th>
             <th scope="col">Quantity</th>
+            <th scope="col">Par</th>
             <th scope="col">Units</th>
         </tr>
     </thead>
     <tbody>
+        {{#each pantryEntries}}
         <tr>
-            <td>Pears</td>
-            <td>4</td>
-            <td>Each</td>
+            <td>{{Ingredient.name}}</td>
+            <td>{{quantity}}</td>
+            <td>{{par}}</td>
+            <td>{{measurement_unit}}</td>
         </tr>
+        {{/each}}
     </tbody>
 </table>

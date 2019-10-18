@@ -1,8 +1,8 @@
 <script>
 
-function removeRowUsingButton(button) {
+function removeRowUsingButton(button, ingredientId) {
 
-        $.ajax('/pantry-item/:id', {
+        $.ajax('/pantry-item/'+ingredientId, {
 
             type: 'DELETE'
 
@@ -26,12 +26,18 @@ function removeRowUsingButton(button) {
 
                 let itemNewQuantity = $(this).find('.itemQuantityEditInput').val().trim().toLowerCase();
 
+                let itemNewPar = $(this).find('.itemParEditInput').val().trim().toLowerCase();
+
                 let itemNewMeasurement = $(this).find('.editMeasurementSelector').val().trim().toLowerCase();
+
+                let itemId = $(this).find('.itemId').val().trim().toLowerCase();
 
                 let pantryEditDetails = {
 
                     item_quantity: itemNewQuantity,
-                    measurement_unit: itemNewMeasurement
+                    measurement_unit: itemNewMeasurement,
+                    item_id: itemId,
+                    item_par: itemNewPar
 
                 };
 
@@ -79,31 +85,36 @@ function removeRowUsingButton(button) {
         <tr>
             <th scope="col">Food Item</th>
             <th scope="col">Quantity</th>
+            <th scope="col">Par</th>
             <th scope="col">Units</th>
         </tr>
 
     </thead>
 
     <tbody>
-
+        {{#each pantryEntries}}
         <tr class='editPantryInput'>
-            <td>Item</td>
-            <td><input class="itemQuantityEditInput form-control" type="text" value='#'></td>
+            <td>{{Ingredient.name}}</td>
+            <td><input class="itemQuantityEditInput form-control" type="text" value='{{quantity}}'></td>
+            <td><input class="itemParEditInput form-control" type="text" value='{{par}}'></td>
             <td>
                 <div class="form-group">
                     <select class="editMeasurementSelector form-control" id="exampleFormControlSelect1">
+                        {{#select measurement_unit}}
                         <option>Each</option>
                         <option>Ounces</option>
                         <option>Pounds</option>
                         <option>Cups</option>
                         <option>Fl. Ounces</option>
+                        {{/select}}
                     </select>
                 </div>
+                <input class="itemId form-control" type="hidden" value='{{IngredientId}}'>
             </td>
-            <td><button onclick="removeRowUsingButton(this); return false;" type="button"
+            <td><button onclick="removeRowUsingButton(this,{{IngredientId}}); return false;" type="button"
                     class="removeIngredientButton btn btn-outline-danger">x</button></td>
         </tr>
-
+        {{/each}}
     </tbody>
 
 </table>

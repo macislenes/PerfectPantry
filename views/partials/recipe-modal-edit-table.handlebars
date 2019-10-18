@@ -37,34 +37,33 @@
 
     $('#saveRecipeChangesButton').on('click', function () {
 
-        let recipeName = $('#recipeName').text();
         let recipeId = $('#recipeId').val();
-        console.log(recipeName);
         let newRecipeIngredientList = [];
         $('.addRecipeEdit').each(function () {
             let ingredientName = $(this).find('.ingredientName').text();
+            let ingredientId = $(this).find('.ingredientId').val();
             let editRecipeQuantity = $(this).find('.editRecipeQuantityInput').val().trim().toLowerCase();
             let editRecipeMeasurement = $(this).find('.editRecipeMeasurementSelector').val().trim().toLowerCase();
             let recipeEditDetails = {
 
                 item_name: ingredientName,
                 item_quantity: editRecipeQuantity,
-                measurement_unit: editRecipeMeasurement
+                measurement_unit: editRecipeMeasurement,
+                ingredient_id: ingredientId
 
             };
             newRecipeIngredientList.push(recipeEditDetails);
         });
 
         let recipeEditData = {
-
-            recipe_name: recipeName,
+            recipe_id: recipeId,
             items: newRecipeIngredientList
 
         };
 
         console.log(recipeEditData);
 
-        $.ajax('recipe-edit/' + '1', {
+        $.ajax('recipe-edit/' + recipeId, {
 
             type: 'PUT',
             data: recipeEditData
@@ -96,7 +95,8 @@
 
     <div class="modal-header">
 
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">{{recipeEntry.name}}</h5>
+        <input type="hidden" id="recipeId" value="{{recipeEntry.id}}">
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 
@@ -107,12 +107,6 @@
     </div>
 
     <div class="modal-body">
-        <div>
-
-            <h2 id='recipeName'>Recipe Name</h2>
-            <input type="hidden" id="recipeId" value="1">
-
-        </div>
 
 
         <table class="table table-hover">
@@ -128,23 +122,27 @@
             </thead>
 
             <tbody class='editRecipeInput'>
-
+                {{#each ingredients}}
                 <tr class='addRecipeEdit'>
-                    <td class='ingredientName'>Ingredient</td>
-                    <td><input class="editRecipeQuantityInput form-control" type="text" value='#'></td>
+                    <td class='ingredientName'>{{Ingredient.name}}</td>
+                    <td><input class="editRecipeQuantityInput form-control" type="text" value='{{quantity}}'></td>
                     <td>
                         <div class="form-group">
                             <select class="editRecipeMeasurementSelector form-control" id="exampleFormControlSelect1">
+                                {{#select measurement_unit}}
                                 <option>Each</option>
                                 <option>Ounces</option>
                                 <option>Pounds</option>
                                 <option>Cups</option>
                                 <option>Fl. Ounces</option>
+                                {{/select}}
                             </select>
                         </div>
+                        <input class="ingredientId form-control" type="hidden" value='{{IngredientId}}'>
                     </td>
-                    <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>                
+                    <td><button onclick="removeRowUsingButton(this, {{id}}); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>                
                 </tr>
+                {{/each}}
 
             </tbody>
 

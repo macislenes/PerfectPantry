@@ -13,8 +13,16 @@ module.exports = function(sequelize, DataTypes) {
 		par: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false
+		},
+		measurement_unit: {
+			type: DataTypes.STRING(255),
+			allowNull: false
 		}
 	});
+
+	Pantry.associate = function(models) {
+		Pantry.belongsTo(models.Ingredient);
+	  };
 
 	return Pantry;
 };

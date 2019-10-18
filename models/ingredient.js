@@ -6,10 +6,6 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.STRING(255),
 			allowNull: false,
 			unique: true
-		},
-		measurement_unit: {
-			type: DataTypes.STRING(255),
-			allowNull: false
 		}
 	});
 
