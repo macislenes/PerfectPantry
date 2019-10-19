@@ -1,165 +1,85 @@
-<script>
+<div class="modal-dialog modal-dialog-centered" role="document">
 
-    function removeRowUsingButton(button) {
-        $.ajax('/recipe-edit/:id', {
+    <div class="modal-content">
 
-            type: 'DELETE'
+        <div class="modal-header">
 
-        }).done(function () {
+            <h5 class="modal-title" id="exampleModalLongTitle">{{recipeEntry.name}}</h5>
+            <input type="hidden" id="recipeId" value="{{recipeEntry.id}}">
 
-            console.log('Item Was Deleted');
-            $(button).parent().parent().remove();
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 
-        });
-    }
+                <span aria-hidden="true">&times;</span>
 
-    $(function () {
+            </button>
 
-    let newIngredientRow =
-        `<tr class='addRecipeEdit'>
-                    <td><input class="ingredientName form-control" type="text" value='Name'></td>
-                    <td><input class="editRecipeQuantityInput form-control" type="text" value='#'></td>
-                    <td>
-                        <div class="form-group">
-                            <select class="editRecipeMeasurementSelector form-control" id="exampleFormControlSelect1">
-                                <option>Each</option>
-                                <option>Ounces</option>
-                                <option>Pounds</option>
-                                <option>Cups</option>
-                                <option>Fl. Ounces</option>
-                            </select>
-                        </div>
-                    </td>
-                    <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>                
-        </tr>`
+        </div>
+
+        <div class="modal-body">
 
 
+            <table class="table table-hover">
 
-    $('#saveRecipeChangesButton').on('click', function () {
+                <thead>
 
-        let recipeId = $('#recipeId').val();
-        let newRecipeIngredientList = [];
-        $('.addRecipeEdit').each(function () {
-            let ingredientName = $(this).find('.ingredientName').text();
-            let ingredientId = $(this).find('.ingredientId').val();
-            let editRecipeQuantity = $(this).find('.editRecipeQuantityInput').val().trim().toLowerCase();
-            let editRecipeMeasurement = $(this).find('.editRecipeMeasurementSelector').val().trim().toLowerCase();
-            let recipeEditDetails = {
+                    <tr>
+                        <th scope="col">Ingredients</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Units</th>
+                    </tr>
 
-                item_name: ingredientName,
-                item_quantity: editRecipeQuantity,
-                measurement_unit: editRecipeMeasurement,
-                ingredient_id: ingredientId
+                </thead>
 
-            };
-            newRecipeIngredientList.push(recipeEditDetails);
-        });
+                <tbody class='editRecipeInput'>
+                    {{#each ingredients}}
+                    <tr class='addRecipeEdit'>
+                        <td class='ingredientName'>{{Ingredient.name}}</td>
+                        <td><input class="editRecipeQuantityInput form-control" type="text" value='{{quantity}}'></td>
+                        <td>
+                            <div class="form-group">
+                                <select class="editRecipeMeasurementSelector form-control"
+                                    id="exampleFormControlSelect1">
+                                    {{#select measurement_unit}}
+                                    <option>Each</option>
+                                    <option>Ounces</option>
+                                    <option>Pounds</option>
+                                    <option>Cups</option>
+                                    <option>Fl. Ounces</option>
+                                    {{/select}}
+                                </select>
+                            </div>
+                            <input class="ingredientId form-control" type="hidden" value='{{IngredientId}}'>
+                        </td>
+                        <td><button onclick="removeIngredient(this, {{RecipeId}}, {{IngredientId}}); return false;"
+                                type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>
+                    </tr>
+                    {{/each}}
 
-        let recipeEditData = {
-            recipe_id: recipeId,
-            items: newRecipeIngredientList
+                </tbody>
 
-        };
+            </table>
 
-        console.log(recipeEditData);
+        </div>
 
-        $.ajax('recipe-edit/' + recipeId, {
-
-            type: 'PUT',
-            data: recipeEditData
-
-
-        }).done(function () {
-
-            alert('You Have Edited Your Recipe!!');
-
-        });
-
-    });
-
-
-    $('#addIngredientButton').on('click', function () {
-
-        console.log('here');
-        $('.editRecipeInput').append(newIngredientRow);
-
-    });
-
-    });
+        <div class="modal-footer">
 
 
-</script>
+            <button type="button" onclick="addIngredient(); return false;" id='addIngredientButton' class="btn btn-outline-secondary">Add Ingredient</button>
+
+            <button type="button" onclick="saveRecipeChanges(); return false;" id='saveRecipeChangesButton' class="btn btn-outline-secondary">Save
+                changes</button>
+
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
 
 
-<div class="modal-content">
-
-    <div class="modal-header">
-
-        <h5 class="modal-title" id="exampleModalLongTitle">{{recipeEntry.name}}</h5>
-        <input type="hidden" id="recipeId" value="{{recipeEntry.id}}">
-
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-
-            <span aria-hidden="true">&times;</span>
-
-        </button>
-
-    </div>
-
-    <div class="modal-body">
-
-
-        <table class="table table-hover">
-
-            <thead>
-
-                <tr>
-                    <th scope="col">Ingredients</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Units</th>
-                </tr>
-
-            </thead>
-
-            <tbody class='editRecipeInput'>
-                {{#each ingredients}}
-                <tr class='addRecipeEdit'>
-                    <td class='ingredientName'>{{Ingredient.name}}</td>
-                    <td><input class="editRecipeQuantityInput form-control" type="text" value='{{quantity}}'></td>
-                    <td>
-                        <div class="form-group">
-                            <select class="editRecipeMeasurementSelector form-control" id="exampleFormControlSelect1">
-                                {{#select measurement_unit}}
-                                <option>Each</option>
-                                <option>Ounces</option>
-                                <option>Pounds</option>
-                                <option>Cups</option>
-                                <option>Fl. Ounces</option>
-                                {{/select}}
-                            </select>
-                        </div>
-                        <input class="ingredientId form-control" type="hidden" value='{{IngredientId}}'>
-                    </td>
-                    <td><button onclick="removeRowUsingButton(this, {{id}}); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>                
-                </tr>
-                {{/each}}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-    <div class="modal-footer">
-
-
-        <button type="button" id='addIngredientButton' class="btn btn-outline-secondary">Add Ingredient</button>
-
-        <button type="button" id='saveRecipeChangesButton' class="btn btn-outline-secondary">Save changes</button>
-
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-
+        </div>
 
     </div>
 
 </div>
+
+<script>
+
+    
+
+</script>

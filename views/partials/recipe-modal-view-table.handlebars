@@ -1,3 +1,6 @@
+
+  <div class="modal-dialog modal-dialog-centered" role="document">
+
 <div class="modal-content">
 
     <div class="modal-header">
@@ -13,7 +16,6 @@
     </div>
 
     <div class="modal-body">
-        
 
 
         <table class="table table-hover">
@@ -37,17 +39,44 @@
                 </tr>
                 {{/each}}
             </tbody>
-
         </table>
 
     </div>
 
     <div class="modal-footer">
 
-        <button type="button" class="btn btn-outline-secondary">Make Recipe</button>
+        <button type="button" onclick="makeRecipe({{recipeEntry.id}})" class="btn btn-outline-secondary">Make Recipe</button>
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
 
 
     </div>
+
+</div>
+
+</div>
+
+<div id='makeRecipeAlert' class="alert fixed-top alert-warning alert-dismissible fade" role="alert">
+
+  <h4 class="alert-heading">Oh No!!</h4>
+
+  <div id='needToPurchase'></div>
+
+  <hr>
+
+  <p class="mb-0"></p>
+
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+
+    <span aria-hidden="true">&times;</span>
+
+</div>
+
+<div id='recipeMadeAlert' class="alert fixed-top alert-success alert-dismissible fade" role="alert">
+
+  <h4 class="alert-heading">The ingredients have been removed from your inventory</h4>
+
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+
+    <span aria-hidden="true">&times;</span>
 
 </div>

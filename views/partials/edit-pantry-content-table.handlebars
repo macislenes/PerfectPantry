@@ -1,83 +1,3 @@
-<script>
-
-function removeRowUsingButton(button, ingredientId) {
-
-        $.ajax('/pantry-item/'+ingredientId, {
-
-            type: 'DELETE'
-
-        }).done(function () {
-
-            alert('You Have Edited Your Pantry!!');
-            $(button).parent().parent().remove();
-
-        });
-
-
-    };
-
-    $(function () {
-
-        $('#submitPantryButton').on('click', function () {
-
-            let pantryEditList = [];
-
-            $('.editPantryInput').each(function () {
-
-                let itemNewQuantity = $(this).find('.itemQuantityEditInput').val().trim().toLowerCase();
-
-                let itemNewPar = $(this).find('.itemParEditInput').val().trim().toLowerCase();
-
-                let itemNewMeasurement = $(this).find('.editMeasurementSelector').val().trim().toLowerCase();
-
-                let itemId = $(this).find('.itemId').val().trim().toLowerCase();
-
-                let pantryEditDetails = {
-
-                    item_quantity: itemNewQuantity,
-                    measurement_unit: itemNewMeasurement,
-                    item_id: itemId,
-                    item_par: itemNewPar
-
-                };
-
-                pantryEditList.push(pantryEditDetails);
-
-            });
-
-            let pantryEditData = {
-
-                ingredients: pantryEditList
-
-            };
-
-            $.ajax('/pantry-edit', {
-
-                type: 'POST',
-                data: pantryEditData
-
-            }).done(function () {
-
-                alert('You Have Edited Your Pantry!!');
-
-            });
-
-        });
-
-            $('#pantryTab').removeClass('active');
-            $('#pantryTab').addClass('link');
-            $('#addTab').removeClass('active');
-            $('#addTab').addClass('link');
-            $('#editTab').removeClass('link');
-            $('#editTab').addClass('active');
-
-
-    });
-
-
-</script>
-
-
 <table class="table table-hover">
 
     <thead>
@@ -124,3 +44,92 @@ function removeRowUsingButton(button, ingredientId) {
     <button id='submitPantryButton' type="button" class="btn btn-outline-success">Submit</button>
 
 </div>
+
+<div id='editRecipeCompleteAlert' class="alert alert-warning alert-dismissible fade fixed-top" role="alert">
+
+    <strong>Item Was Removed from Pantry</strong>
+
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+
+        <span aria-hidden="true">&times;</span>
+
+    </button>
+
+</div>
+
+
+<script>
+
+    function removeRowUsingButton(button, ingredientId) {
+        let uid = localStorage.getItem("uid");
+
+        $.ajax('/pantry-item/' + ingredientId + '?uid=' + uid, {
+
+            type: 'DELETE'
+
+        }).done(function () {
+
+            $('#editRecipeCompleteAlert').addClass('show');
+            $(button).parent().parent().remove();
+
+        });
+
+
+    };
+
+    $('#submitPantryButton').on('click', function () {
+
+        let pantryEditList = [];
+
+        $('.editPantryInput').each(function () {
+
+            let itemNewQuantity = $(this).find('.itemQuantityEditInput').val().trim().toLowerCase();
+
+            let itemNewPar = $(this).find('.itemParEditInput').val().trim().toLowerCase();
+
+            let itemNewMeasurement = $(this).find('.editMeasurementSelector').val().trim().toLowerCase();
+
+            let itemId = $(this).find('.itemId').val().trim().toLowerCase();
+
+            let pantryEditDetails = {
+
+                item_quantity: itemNewQuantity,
+                measurement_unit: itemNewMeasurement,
+                item_id: itemId,
+                item_par: itemNewPar
+
+            };
+
+            pantryEditList.push(pantryEditDetails);
+
+        });
+
+        let pantryEditData = {
+
+            ingredients: pantryEditList,
+            uid: localStorage.getItem("uid")
+
+        };
+
+        $.ajax('/pantry-edit', {
+
+            type: 'POST',
+            data: pantryEditData
+
+        }).done(function () {
+
+            window.location = '/pantry'
+
+        });
+
+    });
+
+    $('#pantryTab').removeClass('active');
+    $('#pantryTab').addClass('link');
+    $('#addTab').removeClass('active');
+    $('#addTab').addClass('link');
+    $('#editTab').removeClass('link');
+    $('#editTab').addClass('active');
+
+
+</script>

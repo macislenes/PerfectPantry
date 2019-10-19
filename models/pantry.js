@@ -1,9 +1,7 @@
-/* jshint indent: 1 */
-
 module.exports = function(sequelize, DataTypes) {
 	var Pantry = sequelize.define('Pantry', {
 		user_id: {
-			type: DataTypes.INTEGER(11),
+			type: DataTypes.STRING(255),
 			allowNull: false
 		},
 		quantity: {

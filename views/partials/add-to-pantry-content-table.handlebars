@@ -56,8 +56,8 @@ function removeRowUsingButton(button){
 
             let items = {
 
-                items: itemList
-
+                items: itemList,
+                uid: localStorage.getItem('uid')
             };
 
 
@@ -68,7 +68,7 @@ function removeRowUsingButton(button){
 
             }).done(function(){
 
-                alert('You Have Added To Your Inventory!!');
+                window.location = '/pantry'
 
             });
 

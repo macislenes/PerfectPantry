@@ -10,7 +10,7 @@
             // ajax call to 'pantry-table' 
             // using the 'get' method to return information
             // We will display the 'pantry-table' partial
-            $.ajax('pantry-table', {
+            $.ajax('pantry-table?uid='+localStorage.getItem('uid'), {
 
                 type: 'GET',
 
@@ -39,7 +39,7 @@
             // ajax call to 'edit-pantry-table' 
             // using the 'get' method to return information
             // We will display the 'edit-pantry-table' partial
-            $.ajax('edit-pantry-table', {
+            $.ajax('edit-pantry-table?uid='+localStorage.getItem('uid'), {
 
                 type: 'GET',
 
@@ -68,7 +68,7 @@
             // ajax call to 'edit-pantry-table' 
             // using the 'get' method to return information
             // We will display the 'edit-pantry-table' partial
-            $.ajax('add-to-pantry-table', {
+            $.ajax('add-to-pantry-table?uid='+localStorage.getItem('uid'), {
 
                 type: 'GET',
 

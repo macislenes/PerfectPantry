@@ -9,7 +9,8 @@
             // ajax call to 'recipes-view' 
             // using the 'get' method to return information
             // We will display the 'recipes-view' partial
-            $.ajax('recipes-view', {
+            let uid = localStorage.getItem('uid');
+            $.ajax('recipes-view?uid='+uid, {
 
                 type: 'GET',
 
@@ -35,7 +36,8 @@
 
             // ajax call to 'recipes-new' 
             // using the 'get' method to return information
-            $.ajax('recipes-new', {
+            let uid = localStorage.getItem('uid');
+            $.ajax('recipes-new?uid='+uid, {
 
                 type: 'GET',
 
@@ -57,6 +59,131 @@
 
 
     });
+
+    function makeRecipe(recipeId){
+        let uid = localStorage.getItem('uid');
+        $.ajax('/make-recipe/'+recipeId+'?uid='+uid, {
+
+            type: 'PUT'
+
+        }).done(function (res) {
+
+            console.log(res);
+            if(res.success){
+                
+                $('#recipeMadeAlert').addClass('show');
+                
+            }else{
+                let needToPurchase = res.needToPurchase;
+                let purchaseMessage = "<p>You don't have enough of the following ingredients to make this recipe:</p>";
+
+                needToPurchase.forEach(ingredient => {
+
+                    purchaseMessage += '<p>' + ingredient.name + ' - You have ' + ingredient.have + ', but you need '+ ingredient.need +'</p>';
+
+                });
+                
+                $('#needToPurchase').html(purchaseMessage);
+                $('#makeRecipeAlert').addClass('show');
+            }
+
+
+        });
+    }
+
+    function removeIngredient(button, recipeId, ingredientId) {
+        $.ajax('/recipe/' + recipeId + '/ingredient/' + ingredientId, {
+
+            type: 'DELETE'
+
+        }).done(function () {
+
+            console.log('Item Was Deleted');
+            $(button).parent().parent().remove();
+
+        });
+    }
+
+    function removeRow(button) {
+        $(button).parent().parent().remove();
+    }
+
+        let newIngredientRow =
+            `<tr class='addRecipeEdit'>
+                    <td><input class="ingredientName form-control" type="text" value='Name'></td>
+                    <td><input class="editRecipeQuantityInput form-control" type="text" value='#'></td>
+                    <td>
+                        <div class="form-group">
+                            <select class="editRecipeMeasurementSelector form-control" id="exampleFormControlSelect1">
+                                <option>Each</option>
+                                <option>Ounces</option>
+                                <option>Pounds</option>
+                                <option>Cups</option>
+                                <option>Fl. Ounces</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td><button onclick="removeRow(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>                
+        </tr>`
+
+
+
+        function saveRecipeChanges(){
+            console.log("inside the on click");
+
+            let recipeId = $('#recipeId').val();
+            let newRecipeIngredientList = [];
+            $('.addRecipeEdit').each(function () {
+                let ingredientName = $(this).find('.ingredientName').text().toLowerCase();
+                if (ingredientName.length == 0) {
+                    ingredientName = $(this).find('.ingredientName').val().toLowerCase();
+                };
+                let ingredientId = $(this).find('.ingredientId').val();
+                let editRecipeQuantity = $(this).find('.editRecipeQuantityInput').val().trim().toLowerCase();
+                let editRecipeMeasurement = $(this).find('.editRecipeMeasurementSelector').val().trim().toLowerCase();
+
+                let recipeEditDetails = {
+
+                    item_name: ingredientName,
+                    item_quantity: editRecipeQuantity,
+                    measurement_unit: editRecipeMeasurement,
+                    ingredient_id: ingredientId
+
+                };
+                newRecipeIngredientList.push(recipeEditDetails);
+
+                let recipeEditData = {
+                    recipe_id: recipeId,
+                    items: newRecipeIngredientList
+
+                };
+
+                console.log(recipeEditData);
+
+                $.ajax('recipe-edit/' + recipeId, {
+
+                    type: 'PUT',
+                    data: recipeEditData
+
+
+                }).done(function () {
+
+                    window.location = '/recipes?uid='+localStorage.getItem('uid');
+
+                });
+
+
+
+
+            });
+
+    };
+
+    function addIngredient(){
+
+            $('.editRecipeInput').append(newIngredientRow);
+
+        };
 
 
 </script>

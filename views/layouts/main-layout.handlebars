@@ -54,9 +54,12 @@
               Recipes
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/recipes?mode=view">View My Recipes</a>
-              <a class="dropdown-item" href="/recipes?mode=add">Add a New Recipe</a>
+              <a id = 'navBarViewRecipe' class="dropdown-item" href="/recipes?mode=view">View My Recipes</a>
+              <a id = 'navBarAddRecipe' class="dropdown-item" href="/recipes?mode=add">Add a New Recipe</a>
             </div>
+          </li>
+          <li class="nav-item active" style="display:none" id="logoutButton">
+            <a class="nav-link" href="#" onclick="firebaseLogout(); return false;">Logout</a>
           </li>
         </ul>
       </div>
@@ -68,6 +71,78 @@
 
 
       {{!-- Triple curly braces here is where all of our .handlebars will be rendered--}}
+
+        <script type="text/javascript">
+      // Initialize Firebase
+var config = {
+  apiKey: "AIzaSyCldQsxT3jJ6vTnm_xXjtDkc0Ux-PF3q9Y",
+  authDomain: "perfectpantry-10a54.firebaseapp.com",
+  storageBucket: "perfectpantry-10a54.appspot.com"
+};
+
+function addUidToHref(link){
+  let newHref = $(link).attr('href') + '&uid=' + localStorage.getItem('uid');
+  $(link).attr('href', newHref);
+}
+
+firebase.initializeApp(config);
+      
+      // FirebaseUI config.
+      var uiConfig = {
+        callbacks: {
+    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+      console.log(authResult.user.uid);
+      return false;
+    }},
+        signInOptions: [
+          // Leave the lines as is for the providers you want to offer your users.
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID
+        ]
+      };
+
+      // Initialize the FirebaseUI Widget using Firebase.
+      // The start method will wait until the DOM is loaded.
+      firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    localStorage.setItem('uid',user.uid);
+    if(window.location.href.indexOf('login') >= 0){
+      window.location = '/pantry?uid='+user.uid;
+    }else{
+      $('#logoutButton').show(); 
+      addUidToHref($('#navBarViewPantry'));
+      addUidToHref($('#navBarEditPantry'));
+      addUidToHref($('#navBarAddPantry'));
+      addUidToHref($('#navBarAddRecipe'));
+      addUidToHref($('#navBarViewRecipe'));
+    }
+  } else {
+    // No user is signed in.
+    if(window.location.href.indexOf('login') >= 0){
+      var ui = new firebaseui.auth.AuthUI(firebase.auth());
+      ui.start('#firebaseui-auth-container', uiConfig);
+    }
+    else{
+      window.location = '/login';
+    }
+  }
+});
+
+function firebaseLogout(){
+  firebase.auth().signOut().then(function() {
+  // Sign-out successful.
+  localStorage.removeItem('uid');
+}, function(error) {
+  // An error happened.
+});
+}
+
+$(function(){
+    $("[data-hide]").on("click", function(){
+        $(this).closest("." + $(this).attr("data-hide")).hide();
+    });
+});
+    </script>
+
    {{{ body }}}
 
 
@@ -76,6 +151,7 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"></script>
       <script src='/js/navbar.js'></script>
+
   </body>
 
 </html>

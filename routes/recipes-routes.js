@@ -21,7 +21,6 @@ module.exports = function(app){
             const item = await db.RecipeIngredient.create(tempItem).done(function(){});
             return item;
         } else {
-            //const item = await db.Pantry.update(foundItem, { where: {user_id: user_id, ingredientId: ingredientId} });
             foundItem.update({quantity: quantity, measurement_unit: measurement_unit});
             return foundItem;
         }
@@ -41,8 +40,21 @@ module.exports = function(app){
         return recipeIngredients;
     }
 
-    app.get('/recipes', async function(req, res) {
+    function authChecker(req,res){
+        if(!req.query.uid){
+            res.redirect('/login');
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 
+    app.get('/recipes', async function(req, res) {
+        let authenticated = authChecker(req,res);
+        if(!authenticated){
+            return;
+        }
         hbsData = {}
         if(req.query.mode == 'add'){
             hbsData.addView = true;
@@ -55,7 +67,7 @@ module.exports = function(app){
         const recipeEntries = await db.Recipe.findAll(
             { 
                 where: {
-                    user_id: 1
+                    user_id: req.query.uid
                 }
             }
         );
@@ -69,7 +81,7 @@ module.exports = function(app){
         const recipeEntries = await db.Recipe.findAll(
             { 
                 where: {
-                    user_id: 1
+                    user_id: req.query.uid
                 }
             }
         );
@@ -116,20 +128,164 @@ module.exports = function(app){
         res.render('partials/recipe-modal-edit-table', hbsData);
     });
 
-    app.put('/recipe-edit/:id', function(req, res) {
+    app.put('/recipe-edit/:id', async function(req, res) {
         console.log(req.body);
+        let ingredient_names = [];
+        let ingredientIds = {};
+        let toCreate = [];
         req.body.items.forEach(ingredient => {
-            newRows = createOrUpdateRecipeIngredient(parseInt(req.body.recipe_id), ingredient.ingredient_id, ingredient.item_quantity, ingredient.measurement_unit)
+            ingredient_names.push(ingredient.item_name);
         });
-        res.send()
+
+        //search to see if the ingredients already exist
+        await db.Ingredient.findAll({
+            where: {
+                name: {
+                    //SELECT * FROM INGREDIENTS WHERE NAME IN ('apples','oranges','olive oil')
+                    [Op.or]: ingredient_names
+                }
+            }
+        }).then(function (results) {
+            //store the names and IDs of the ingredients we found in the database
+            results.forEach(ingredient => {
+                ingredientIds[ingredient.name] = ingredient.id;
+            });
+        });
+        console.log(ingredientIds);
+        //array of ingredient names we found
+        let foundIngredients = Object.keys(ingredientIds);
+        console.log(foundIngredients);
+
+        req.body.items.forEach(ingredient => {
+            if (foundIngredients.indexOf(ingredient.item_name) == -1) {
+                toCreate.push({
+                    name: ingredient.item_name
+                });
+            }
+        });
+
+        // // create ingredients not existing
+        await db.Ingredient.bulkCreate(toCreate).then(function (result) {
+            result.forEach(ingredient => {
+                ingredientIds[ingredient.name] = ingredient.id;
+            });
+        });
+        req.body.items.forEach(ingredient => {
+            newRows = createOrUpdateRecipeIngredient(parseInt(req.body.recipe_id), ingredientIds[ingredient.item_name], ingredient.item_quantity, ingredient.measurement_unit)
+        });
+        res.send();
 
     });
 
-    app.delete('/recipe-edit/:id', function(req, res) {
+    app.delete('/recipe/:recipeId/ingredient/:ingredientId', async function(req, res) {
 
-        console.log(req.params.id);
-        res.send()
+        console.log(req.params.recipeId);
+        console.log(req.params.ingredientId);
+        await db.RecipeIngredient.destroy(
+            {
+                where: {
+                    RecipeId: parseInt(req.params.recipeId),
+                    IngredientId: parseInt(req.params.ingredientId)
+                }
+            }
+        )
+        res.send();
 
+    });
+
+    app.delete('/recipe/:recipeId', async function(req,res){
+        console.log(req.params.recipeId);
+        await db.Recipe.destroy(
+            {
+                where: {
+                    id: parseInt(req.params.recipeId)
+                }
+            }
+        )
+        res.send();
+    });
+
+    app.put('/make-recipe/:recipeId', async function(req,res){
+        console.log(req.params.recipeId);
+        let ingredients = await findRecipeIngredients(req.params.recipeId);
+        let ingredientIds = [];
+        let inRecipe = {};
+        ingredients.forEach(ingredient => {
+            inRecipe[ingredient.IngredientId] = {name: ingredient.Ingredient.name, quantity: ingredient.quantity}
+            ingredientIds.push(ingredient.IngredientId);
+        });
+        const pantryEntries = await db.Pantry.findAll(
+            { 
+                where: {
+                    user_id: req.query.uid,
+                    IngredientId: {
+                        [Op.or]: ingredientIds
+                    }
+                },
+                include: [
+                    {model: db.Ingredient}
+                ]
+            }
+        );
+        let foundInPantry = {};
+        pantryEntries.forEach(entry => {
+            foundInPantry[entry.IngredientId] = {name: entry.Ingredient.name, quantity: entry.quantity}
+        });
+        console.log(inRecipe);
+        console.log(foundInPantry);
+        let needToPurchase = [];
+        let available = [];
+        Object.keys(inRecipe).forEach(ingredientId => {
+            if(foundInPantry[ingredientId]){
+                //found in pantry, check quantity
+                if(inRecipe[ingredientId].quantity <= foundInPantry[ingredientId].quantity){
+                    //have enough
+                    available.push(inRecipe[ingredientId]);
+                }else{
+                    //don't have enough, need to purchase
+                    needToPurchase.push({
+                        name: inRecipe[ingredientId].name,
+                        need: inRecipe[ingredientId].quantity,
+                        have: foundInPantry[ingredientId].quantity
+                    });
+                }
+            }else{
+                //not in pantry, out of stock
+                needToPurchase.push({
+                    name: inRecipe[ingredientId].name,
+                    need: inRecipe[ingredientId].quantity,
+                    have: 0
+                });
+            }
+        });
+        console.log(needToPurchase);
+        console.log(available);
+
+        if(needToPurchase.length == 0){
+            //we can reduce the quantities now and confirm the recipe was made
+            pantryEntries.forEach(entry => {
+                let newQty = entry.quantity - inRecipe[entry.IngredientId].quantity;
+                if(newQty > 0){
+                    entry.update({
+                        quantity: newQty
+                    });
+                }else{
+                    entry.destroy();
+                }
+            });
+            res.json(
+                {
+                    success: true
+                }
+            );
+        }
+        else{
+            //respond with insufficient quantity message
+            res.json({
+                success: false,
+                needToPurchase: needToPurchase
+            });
+        }
     });
 
 
@@ -178,9 +334,8 @@ module.exports = function(app){
 
         //Create recipe
         let createdRecipeId;
-        await db.Recipe.create({name: req.body.recipe_name, user_id: 1}).then(function(result){
+        await db.Recipe.create({name: req.body.recipe_name, user_id: req.body.uid}).then(function(result){
             createdRecipeId = result.id;
-            console.log("inside await");    
         });
 
         req.body.ingredients.forEach(ingredient => {

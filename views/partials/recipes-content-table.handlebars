@@ -1,9 +1,16 @@
 <script>
 
-    function removeRowUsingButton(button){
+    function removeRecipe(button, recipeId){
+        $.ajax('/recipe/'+recipeId, {
 
+            type: 'DELETE'
 
+        }).done(function () {
+
+            console.log('Recipe Was Deleted');
             $(button).parent().parent().remove();
+
+        });
         };
 
     function showRecipeModal(recipeID) {
@@ -68,7 +75,7 @@
             </td>
             <td><button onclick="editRecipeModal({{id}})" type="button" class="btn btn-outline-secondary">edit</button>
             </td>
-            <td><button onclick="removeRowUsingButton(this); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>
+            <td><button onclick="removeRecipe(this,{{id}}); return false;" type="button" class="removeIngredientButton btn btn-outline-danger">x</button></td>
         </tr>
         {{/each}}
     </tbody>

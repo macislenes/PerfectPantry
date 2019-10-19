@@ -6,6 +6,16 @@ const Op = Sequelize.Op
 // Routes
 module.exports = function (app) {
 
+    function authChecker(req,res){
+        if(!req.query.uid){
+            res.redirect('/login');
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
     async function createOrUpdatePantryIngredient(user_id, ingredientId, quantity, par, measurement_unit, addQuantity) {
         const foundItem = await db.Pantry.findOne({ where: { user_id: user_id, ingredientId: ingredientId } });
         if (!foundItem) {
@@ -29,7 +39,6 @@ module.exports = function (app) {
             else{
                 newQty = parseInt(quantity);
             }
-            //const item = await db.Pantry.update(foundItem, { where: {user_id: user_id, ingredientId: ingredientId} });
             foundItem.update({quantity: newQty, par: parseInt(par), measurement_unit: measurement_unit});
             return foundItem;
         }
@@ -50,6 +59,10 @@ module.exports = function (app) {
     }
 
     app.get('/pantry', async function (req, res) {
+        let authenticated = authChecker(req,res);
+        if(!authenticated){
+            return;
+        }
 
         hbsData = {};
 
@@ -66,7 +79,7 @@ module.exports = function (app) {
             const pantryEntries = await db.Pantry.findAll(
                 { 
                     where: {
-                        user_id: 1
+                        user_id: req.query.uid
                     },
                     include: [
                         {model: db.Ingredient}
@@ -88,7 +101,7 @@ module.exports = function (app) {
         const pantryEntries = await db.Pantry.findAll(
             { 
                 where: {
-                    user_id: 1
+                    user_id: req.query.uid
                 },
                 include: [
                     {model: db.Ingredient}
@@ -107,7 +120,7 @@ module.exports = function (app) {
             layout: false
         };
         //read from the database and set it in the variable we'll be passing to the handlebar
-        hbsData.pantryEntries = await findUserPantryIngredients(1);
+        hbsData.pantryEntries = await findUserPantryIngredients(req.query.uid);
         console.log(hbsData);
         
         res.render('partials/edit-pantry-content-table', hbsData);
@@ -121,8 +134,8 @@ module.exports = function (app) {
     });
 
     app.post('/pantry', async function (req, res) {
-
-        console.log(req.body);
+        console.log("************");
+        console.log(req.body.uid);
         let ingredient_names = [];
         let ingredientIds = {};
         let toCreate = [];
@@ -169,7 +182,7 @@ module.exports = function (app) {
 
         req.body.items.forEach(ingredient => {
             let ingredientId = ingredientIds[ingredient.item_name];
-            createOrUpdatePantryIngredient(1, ingredientId, ingredient.item_quantity, ingredient.item_par, ingredient.measurement_unit, true);
+            createOrUpdatePantryIngredient(req.body.uid, ingredientId, ingredient.item_quantity, ingredient.item_par, ingredient.measurement_unit, true);
         });
 
         res.send()
@@ -179,19 +192,19 @@ module.exports = function (app) {
     app.post('/pantry-edit', async function (req, res) {
         console.log(req.body);
         req.body.ingredients.forEach(ingredient => {
-            newRows = createOrUpdatePantryIngredient(1, parseInt(ingredient.item_id), ingredient.item_quantity, ingredient.item_par, ingredient.measurement_unit, false);
+            newRows = createOrUpdatePantryIngredient(req.body.uid, parseInt(ingredient.item_id), ingredient.item_quantity, ingredient.item_par, ingredient.measurement_unit, false);
         });
         res.send();
 
     });
 
     app.delete('/pantry-item/:id', async function (req, res) {
-
-        console.log(req.params.id)
+        console.log("*************");
+        console.log(req.query.uid);
         await db.Pantry.destroy(
             {
                 where: {
-                    user_id: 1,
+                    user_id: req.query.uid,
                     IngredientId: parseInt(req.params.id)
                 }
             }
