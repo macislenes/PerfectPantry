@@ -66,8 +66,8 @@
 
             }).done(function () {
 
-                alert('You Have Created A New Recipe!!');
-
+                window.location = '/recipes?uid='+localStorage.getItem('uid');
+                
             });
 
         });
