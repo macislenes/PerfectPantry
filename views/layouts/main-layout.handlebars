@@ -127,6 +127,7 @@ firebase.initializeApp(config);
   }
 });
 
+//function to handle when a user wants to log out
 function firebaseLogout(){
   firebase.auth().signOut().then(function() {
   // Sign-out successful.

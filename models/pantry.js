@@ -19,7 +19,10 @@ module.exports = function(sequelize, DataTypes) {
 	});
 
 	Pantry.associate = function(models) {
+		//each pantry is related to the Ingredient using belongsTo
+		//the pantry entry belongs to an Ingredient
 		Pantry.belongsTo(models.Ingredient);
+
 	  };
 
 	return Pantry;

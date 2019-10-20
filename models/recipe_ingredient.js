@@ -10,8 +10,12 @@ module.exports = function(sequelize, DataTypes) {
 		}
 	});
 
+	
 	  RecipeIngredient.associate = function(models) {
+		//each recipeIngredient belongs to many recipes
 		RecipeIngredient.belongsTo(models.Recipe);
+
+		//each recipeIngredient belongs to many ingredients
 		RecipeIngredient.belongsTo(models.Ingredient);
 	  };
 

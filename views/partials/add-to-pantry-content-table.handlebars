@@ -7,7 +7,7 @@ function removeRowUsingButton(button){
 
     $(function () {
 
-        // variable with 
+        // variable with new html for dynamic printing
         let newItemRow =
             `<tr class= 'addItemInput'>
             <td><input class="itemNameInput form-control" type="text" value='Item Name'></td>
@@ -28,10 +28,13 @@ function removeRowUsingButton(button){
         </tr>`
 
 
+        //on click function for the sumbit button
         $('#submitPantryAddButton').on('click', function() {
 
+            //array used to store input information
             let itemList = [];
 
+            // we will get the values from the input form
             $('.addItemInput').each(function (){
 
                 let itemName = $(this).find('.itemNameInput').val().trim().toLowerCase();
@@ -51,6 +54,7 @@ function removeRowUsingButton(button){
 
                 };
 
+                //pusht them into the array
                 itemList.push(itemDetails);
             });
 
@@ -61,6 +65,7 @@ function removeRowUsingButton(button){
             };
 
 
+            //using the 'post' method to push the data to the database
             $.ajax('/pantry', {
 
                 type: 'POST',
@@ -68,12 +73,14 @@ function removeRowUsingButton(button){
 
             }).done(function(){
 
+                //when we are done we will go back to the pantry view
                 window.location = '/pantry'
 
             });
 
         });
 
+        //on click to handle the styling of the tabs in the partial
         $('#addItemButton').on('click', function () {
 
             $('#tableBody').append(newItemRow);

@@ -5,29 +5,18 @@ let path = require('path');
 
 module.exports = function(app){
 
+    //on the '/login' route we will use the 'GET' method to display the 'login' page
     app.get('/', function(req, res) {
-
-        hbsData = {};
-
-        if(req.query.mode == 'home'){
-
-            hbsData.homeView = true;
-
-        }else {
-
-            hbsData.homeView = false;
-
-        };
 
         res.render('index');
 
     });
 
+    //on the '/login' route we will use the 'GET' method to display the 'login' page
     app.get('/login', function(req, res){
+
         res.render('login');
+
     });
 
-
-
-
-}
+};

@@ -1,24 +1,29 @@
 <script>
-
+    // function to remove the recipe from the database and the view
     function removeRecipe(button, recipeId){
+
+        //ajax call using the 'DELETE' method  
         $.ajax('/recipe/'+recipeId, {
 
             type: 'DELETE'
 
+        //when done we will delete the row from the view
         }).done(function () {
 
-            console.log('Recipe Was Deleted');
             $(button).parent().parent().remove();
 
         });
         };
 
+    // function to populate the recipe view modal
     function showRecipeModal(recipeID) {
 
+            //ajax call using the 'GET' method
             $.ajax('/recipe-view/' + recipeID, {
 
                 type: 'GET'
 
+            //when done we will add the response to the html and 'show' the view modal
             }).done(function (res) {
 
                 $('.modal-dialog').html(res);
@@ -28,12 +33,15 @@
 
     };
 
+    //function to view the edit recipes form
     function editRecipeModal(recipeID) {
 
+            //ajax call using the 'get' method
             $.ajax('/recipe-edit/'+ recipeID, {
 
                 type: 'GET'
 
+            //when done we will add the response to the html and 'show' the edit modal
             }).done(function (res) {
 
                 $('.modal-dialog').html(res);
@@ -44,6 +52,7 @@
 
     };
 
+    //changing the tabs on top of the partial for display purposes
     $(function() {
 
         $('#recipesTab').removeClass('link');
@@ -59,18 +68,24 @@
 </script>
 
 <div class="modal fade" id="recipeModal" tabindex="-1" role="dialog" aria-labelledby="recipeModalTitle" aria-hidden="true">
+
   <div class="modal-dialog" role="document">
+
   </div>
+
 </div>
 
 
 <table class="table table-hover">
 
     <tbody>
+        {{!-- for each recipe entry we will display a row in the table--}}
         {{#each recipeEntries}}
         <tr>
+            {{!-- recipe name will be pushed dynamically --}}
             <td>{{name}}</td>
             
+            {{!-- recipeId is included in the onclick functions for each button --}}
             <td><button onclick="showRecipeModal({{id}})" type="button" class="btn btn-outline-secondary">view</button>
             </td>
             <td><button onclick="editRecipeModal({{id}})" type="button" class="btn btn-outline-secondary">edit</button>

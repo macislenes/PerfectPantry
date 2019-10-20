@@ -1,11 +1,13 @@
 <script>
 
+    //function removing the row 
     function removeRowUsingButton(button) {
         $(button).parent().parent().remove();
     }
 
     $(function () {
 
+        // variable holding our html we will dynamically print
         let newIngredientRow =
             `<tr class='recipeIngredientInput'>
             <td><input  class="ingredientNameInput form-control" type="text" value='Name'></td>
@@ -25,12 +27,16 @@
         </tr>`
 
 
+        // on click function for the recipe submit button
         $('#submitRecipeButton').on('click', function () {
 
+            //retrieving our recipe name from the input field
             let recipeName = $('#recipeNameInput').val().trim().toLowerCase();
 
+            //empty array to store our input
             let recipeIngredients = [];
 
+            // collecting the information from the form 
             $('.recipeIngredientInput').each(function () {
 
                 let ingredientName = $(this).find('.ingredientNameInput').val().trim().toLowerCase();
@@ -47,6 +53,7 @@
 
                 };
 
+                //pushing the form entries to the empty array
                 recipeIngredients.push(ingredientDetails);
 
             });
@@ -59,6 +66,7 @@
 
             };
 
+            //updating our pantry with the new information
             $.ajax('/recipe', {
 
                 type: 'POST',
@@ -67,11 +75,12 @@
             }).done(function () {
 
                 window.location = '/recipes?uid='+localStorage.getItem('uid');
-                
+
             });
 
         });
 
+        //adding an addition ingredient line to the page
         $('#addIngredientButton').on('click', function () {
 
             $('#tableBody').append(newIngredientRow);

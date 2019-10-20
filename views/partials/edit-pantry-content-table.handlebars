@@ -60,6 +60,7 @@
 
 <script>
 
+    //function used to handle deleting an ingredient
     function removeRowUsingButton(button, ingredientId) {
         let uid = localStorage.getItem("uid");
 
@@ -76,11 +77,14 @@
 
 
     };
-
+    
+    // on click function for the pantry submit button
     $('#submitPantryButton').on('click', function () {
 
+        //empty array to store our input
         let pantryEditList = [];
 
+        // collecting the information from the form 
         $('.editPantryInput').each(function () {
 
             let itemNewQuantity = $(this).find('.itemQuantityEditInput').val().trim().toLowerCase();
@@ -100,6 +104,7 @@
 
             };
 
+            //pushing the form entries to the empty array
             pantryEditList.push(pantryEditDetails);
 
         });
@@ -111,6 +116,7 @@
 
         };
 
+        //updating our pantry with the new information
         $.ajax('/pantry-edit', {
 
             type: 'POST',

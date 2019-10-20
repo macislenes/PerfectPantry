@@ -11,7 +11,8 @@ module.exports = function(sequelize, DataTypes) {
 	});
 
 	Recipe.associate = function(models) {
-		// We're saying that a Pantry entry should have an item
+		
+		//every recipe hasMany recipeIngredients
 		Recipe.hasMany(models.RecipeIngredient, {
 		  onDelete: 'cascade'
 		});
