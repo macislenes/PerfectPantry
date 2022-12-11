@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/macislenes/PerfectPantry#readme",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-handlebars": "^3.1.0",
     "firebase": "^7.1.0",
     "firebaseui": "^4.2.0",
